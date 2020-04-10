@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div v-if="isAuthenticationLoaded" id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -12,8 +12,16 @@
 import { authGuard } from "../src/plugins/auth/authGuard";
 
 export default {
+  data: () => ({
+    isAuthenticationLoaded:false
+  }),
+
   mounted(){
-    // TODO: implement Auth
+    authGuard(async () => {
+        const token = await this.$auth.getTokenSilently();
+        axios.defaults.headers["Authorization"] = `Bearer ${token}`;
+        this.isAuthenticationLoaded = true;
+      });
   }
 }
 </script>
